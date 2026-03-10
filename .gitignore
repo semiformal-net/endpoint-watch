@@ -1,0 +1,21 @@
+# Secrets
+.env
+.env.*
+
+# Local Deno KV data files
+*.kv
+*.kv-wal
+*.kv-shm
+
+# Optional local-only configs
+config.local.yaml
+config.ashby-live.yaml
+run_service.sh
+
+# OS/editor noise
+.DS_Store
+.vscode/
+.idea/
+
+#AI
+PLAN.md

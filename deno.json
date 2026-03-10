@@ -1,0 +1,35 @@
+{
+  "unstable": [
+    "kv",
+    "cron"
+  ],
+  "exclude": [
+    ".env",
+    ".env.*",
+    "*.kv",
+    "*.kv-shm",
+    "*.kv-wal",
+    "config.local.yaml",
+    "PLAN.md",
+    "README.md",
+    "run_service.sh"
+  ],
+  "tasks": {
+    "start": "deno run --allow-net --allow-env --allow-read=. --allow-write=. --unstable-kv --unstable-cron main.ts",
+    "test": "deno test --allow-net --allow-env --allow-read=. --allow-write=. --unstable-kv"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.13",
+    "@std/yaml": "jsr:@std/yaml@^1.0.10"
+  },
+  "fmt": {
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": true,
+    "semiColons": true
+  },
+  "deploy": {
+    "org": "semiformal-net",
+    "app": "endpoint-watch"
+  }
+}
