@@ -9,6 +9,7 @@
 
 # Optional local-only configs
 config.local.yaml
+config.yaml
 config.ashby-live.yaml
 run_service.sh
 
