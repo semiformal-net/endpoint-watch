@@ -185,21 +185,36 @@ function parseConfigObject(raw: unknown): AppConfig {
   };
 }
 
-export async function loadConfig(path: string): Promise<AppConfig> {
+function fileExists(path: string | URL): boolean {
+  try {
+    Deno.statSync(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function loadConfig(path: string | URL): Promise<AppConfig> {
   const text = await Deno.readTextFile(path);
   const raw = parseYaml(text);
   return parseConfigObject(raw);
 }
 
-export function configPathFromEnv(): string {
+export function configPathFromEnv(): string | URL {
   const fromEnv = Deno.env.get('CONFIG_PATH');
   if (fromEnv) {
     return fromEnv;
   }
-  try {
-    Deno.statSync('config.yaml');
-    return 'config.yaml';
-  } catch {
-    return 'config.local.yaml';
+
+  const configYaml = new URL('../config.yaml', import.meta.url);
+  if (fileExists(configYaml)) {
+    return configYaml;
   }
+
+  const configLocalYaml = new URL('../config.local.yaml', import.meta.url);
+  if (fileExists(configLocalYaml)) {
+    return configLocalYaml;
+  }
+
+  return configYaml;
 }

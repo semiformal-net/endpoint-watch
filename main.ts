@@ -35,7 +35,7 @@ function getRuntime(): Promise<AppRuntime> {
   return runtimePromise;
 }
 
-function readCronScheduleSync(path: string): string | null {
+function readCronScheduleSync(path: string | URL): string | null {
   try {
     const text = Deno.readTextFileSync(path);
     const raw = parseYaml(text) as Record<string, unknown> | null;
@@ -46,7 +46,7 @@ function readCronScheduleSync(path: string): string | null {
   } catch (err) {
     console.error('Failed reading cron schedule from config; using hourly fallback', {
       error: err instanceof Error ? err.message : String(err),
-      configPath: path,
+      configPath: String(path),
     });
   }
   return null;
@@ -64,7 +64,7 @@ Deno.cron('poll-change-detector', cronSchedule, async () => {
 });
 
 const port = Number(Deno.env.get('PORT') ?? 8000);
-console.log(`listening on :${port} using config ${configPath} cron=${cronSchedule}`);
+console.log(`listening on :${port} using config ${String(configPath)} cron=${cronSchedule}`);
 Deno.serve({ port }, async (req, info) => {
   const { handler } = await getRuntime();
   return await handler(req, info);
