@@ -9,6 +9,7 @@
 
 # Optional local-only configs
 config.local.yaml
+config.yaml
 config.ashby-live.yaml
 run_service.sh
 
@@ -16,6 +17,3 @@ run_service.sh
 .DS_Store
 .vscode/
 .idea/
-
-#AI
-PLAN.md

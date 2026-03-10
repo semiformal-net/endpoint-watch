@@ -26,7 +26,7 @@ The app reads `config.yaml` by default (or `CONFIG_PATH` if set).
 ### Example `config.yaml`
 
 ```yaml
-poll_cron: '0 */3 * * *'
+poll_cron: '0 * * * *'
 user_agent: 'change-detector/0.2-local'
 
 runtime:
@@ -57,8 +57,8 @@ watches:
     headers:
       accept: 'application/vnd.github+json'
 
-  - name: 'openai-jobs'
-    url: 'https://api.ashbyhq.com/posting-api/job-board/openai'
+  - name: 'wealthsimple-jobs'
+    url: 'https://api.ashbyhq.com/posting-api/job-board/wealthsimple'
     jsonpath: '$.jobs[*].title'
 ```
 
@@ -158,27 +158,28 @@ You can deploy either from the dashboard or CLI.
    - runtime mode: dynamic/server
    - entrypoint: `main.ts`
    - app directory: repo root (`.`)
-4. Add environment variables in the Deploy app settings:
+4. Attach a **Deno KV database** to the app (required for persistent state):
+   - Org -> Databases -> create/select Deno KV
+   - assign/bind it to this app
+5. Add environment variables in the Deploy app settings:
    - `NTFY_AUTH_TOKEN` (secret)
    - `GITHUB_TOKEN` (optional, for higher GitHub API rate limit)
    - ensure `KV_PATH` is **not** set on Deploy (managed Deploy KV should be used)
-5. Deploy and verify logs.
-6. Trigger a run (`/run`) and confirm alerts are sent.
+6. Deploy and verify logs.
+7. Trigger a run (`/run`) and confirm alerts are sent.
 
 ### Option B: CLI (`deno deploy`)
 
 Example local-directory creation command:
 
 ```bash
-deno deploy create `pwd` \
-    --org <my-org> \
-    --app endpoint-watch \
-    --source local \
-    --runtime-mode dynamic \
-    --app-directory . \
-    --working-directory . \
-    --entrypoint main.ts \
-    --region global
+deno deploy create . \
+  --org <your-org> \
+  --app <your-app-name> \
+  --source local \
+  --runtime-mode dynamic \
+  --entrypoint main.ts \
+  --region global
 ```
 
 Region options are `global`, `us`, or `eu`.
@@ -189,13 +190,15 @@ After the app is created, deploy updates from the current local directory:
 deno deploy --org <your-org> --app <your-app-name>
 ```
 
-Then configure secrets:
+Then configure secrets (and ensure no `KV_PATH` override):
 
 ```bash
 deno deploy env add NTFY_AUTH_TOKEN '...' --secret --org <your-org> --app <your-app-name>
 deno deploy env add GITHUB_TOKEN '...' --secret --org <your-org> --app <your-app-name>
 deno deploy env delete KV_PATH --org <your-org> --app <your-app-name>
 ```
+
+Also attach a Deno KV database to the app in Deploy dashboard (Settings/Databases) before relying on `/state`.
 
 Useful commands:
 
