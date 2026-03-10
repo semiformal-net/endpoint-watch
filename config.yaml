@@ -1,4 +1,4 @@
-poll_cron: '0 */1 * * *'
+poll_cron: '0 * * * *'
 user_agent: 'change-detector/0.2-local'
 
 runtime:
@@ -30,38 +30,6 @@ watches:
     headers:
       accept: 'application/vnd.github+json'
 
-  - name: 'jellyfin release'
-    url: 'https://api.github.com/repos/jellyfin/jellyfin/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'nzbhydra release'
-    url: 'https://api.github.com/repos/theotherp/nzbhydra2/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'seerr release'
-    url: 'https://api.github.com/repos/seerr-team/seerr/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'sabnzbd release'
-    url: 'https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
   - name: 'ntfy release'
     url: 'https://api.github.com/repos/binwiederhier/ntfy/releases/latest'
     jsonpath: '$.tag_name'
@@ -70,54 +38,7 @@ watches:
     headers:
       accept: 'application/vnd.github+json'
 
-  - name: 'getiplayer release'
-    url: 'https://api.github.com/repos/get-iplayer/get_iplayer/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'beets release'
-    url: 'https://api.github.com/repos/beetbox/beets/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'changedetection.io release'
-    url: 'https://api.github.com/repos/dgtlmoon/changedetection.io/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'gatus release'
-    url: 'https://api.github.com/repos/TwiN/gatus/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'sonarr release'
-    url: 'https://api.github.com/repos/Sonarr/Sonarr/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json'
-
-  - name: 'stash release'
-    url: 'https://api.github.com/repos/stashapp/stash/releases/latest'
-    jsonpath: '$.tag_name'
-    auth_env: 'GITHUB_TOKEN'
-    auth_prefix: 'token '
-    headers:
-      accept: 'application/vnd.github+json' 
-
+  
   - name: 'OpenAI-jobs'
     url: 'https://api.ashbyhq.com/posting-api/job-board/openai'
     jsonpath: '$.jobs[*].title'

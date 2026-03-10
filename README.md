@@ -26,7 +26,7 @@ The app reads `config.yaml` by default (or `CONFIG_PATH` if set).
 ### Example `config.yaml`
 
 ```yaml
-poll_cron: '0 */3 * * *'
+poll_cron: '0 * * * *'
 user_agent: 'change-detector/0.2-local'
 
 runtime:
@@ -57,8 +57,8 @@ watches:
     headers:
       accept: 'application/vnd.github+json'
 
-  - name: 'openai-jobs'
-    url: 'https://api.ashbyhq.com/posting-api/job-board/openai'
+  - name: 'wealthsimple-jobs'
+    url: 'https://api.ashbyhq.com/posting-api/job-board/wealthsimple'
     jsonpath: '$.jobs[*].title'
 ```
 
@@ -170,15 +170,13 @@ You can deploy either from the dashboard or CLI.
 Example local-directory creation command:
 
 ```bash
-deno deploy create `pwd` \
-    --org <my-org> \
-    --app endpoint-watch \
-    --source local \
-    --runtime-mode dynamic \
-    --app-directory . \
-    --working-directory . \
-    --entrypoint main.ts \
-    --region global
+deno deploy create . \
+  --org <your-org> \
+  --app <your-app-name> \
+  --source local \
+  --runtime-mode dynamic \
+  --entrypoint main.ts \
+  --region global
 ```
 
 Region options are `global`, `us`, or `eu`.
