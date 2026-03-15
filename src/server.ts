@@ -12,10 +12,11 @@ export function buildHandler(runner: ChangeRunner, store: StateStore): Deno.Serv
     }
 
     if (req.method === 'POST' && url.pathname === '/run') {
-      const summary = await runner.runOnce();
-      return new Response(JSON.stringify(summary, null, 2), {
-        headers: { 'content-type': 'application/json' },
-      });
+    //  const summary = await runner.runOnce();
+    //  return new Response(JSON.stringify(summary, null, 2), {
+    //    headers: { 'content-type': 'application/json' },
+    //  });
+	return new Response('Forbidden', { status: 403 });
     }
 
     if (req.method === 'GET' && url.pathname === '/state') {
