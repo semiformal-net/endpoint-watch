@@ -53,11 +53,18 @@ export class ChangeRunner {
   async runOnce(): Promise<RunSummary> {
     const startedAt = this.#now().toISOString();
     const results: RunWatchResult[] = [];
-    for (const watch of this.config.watches) {
-      if (this.config.runtime.perWatchJitterMs > 0) {
-        await this.#sleep(this.#randomInt(this.config.runtime.perWatchJitterMs));
-      }
-      results.push(await this.#runWatch(watch));
+    const batchSize = this.config.runtime.maxParallelWatches;
+    for (let i = 0; i < this.config.watches.length; i += batchSize) {
+      const batch = this.config.watches.slice(i, i + batchSize);
+      const batchResults = await Promise.all(
+        batch.map(async (watch) => {
+          if (this.config.runtime.perWatchJitterMs > 0) {
+            await this.#sleep(this.#randomInt(this.config.runtime.perWatchJitterMs));
+          }
+          return this.#runWatch(watch);
+        }),
+      );
+      results.push(...batchResults);
     }
     return {
       startedAt,

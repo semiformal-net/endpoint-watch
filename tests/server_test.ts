@@ -18,7 +18,7 @@ Deno.test('/state endpoint returns expected shape and does not leak env secret',
   const config: AppConfig = {
     pollCron: '0 */3 * * *',
     userAgent: 'test-agent',
-    runtime: { maxParallelWatches: 1, perWatchJitterMs: 1, runLeaseTtlSec: 120 },
+    runtime: { maxParallelWatches: 1, perWatchJitterMs: 1 },
     message: {
       url: 'https://ntfy.example.com/topic',
       authEnv: 'NTFY_AUTH_TOKEN',

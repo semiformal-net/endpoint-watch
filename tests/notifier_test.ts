@@ -16,7 +16,11 @@ Deno.test('HttpNotifier sends compact old->new message body', async () => {
     return new Response('ok', { status: 200 });
   };
 
-  const notifier = new HttpNotifier('https://ntfy.example.com/topic', fakeFetch);
+  const notifier = new HttpNotifier(
+    'https://ntfy.example.com/topic',
+    { maxAttempts: 1, baseDelayMs: 10, maxDelayMs: 10, jitterMs: 0 },
+    fakeFetch,
+  );
   const event: NotificationEvent = {
     eventId: 'e1',
     watchName: 'navidrome-latest-release',

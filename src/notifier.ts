@@ -1,4 +1,4 @@
-import { NotificationEvent } from './types.ts';
+import { NotificationEvent, RetryConfig } from './types.ts';
 
 export interface Notifier {
   send(event: NotificationEvent, token: string): Promise<void>;
@@ -7,26 +7,45 @@ export interface Notifier {
 export class HttpNotifier implements Notifier {
   constructor(
     private readonly url: string,
+    private readonly retryConfig: RetryConfig,
     private readonly fetchImpl: typeof fetch = fetch,
   ) {}
 
   async send(event: NotificationEvent, token: string): Promise<void> {
     const message = buildAlertBody(event.oldValue, event.newValue);
+    const { maxAttempts, baseDelayMs, maxDelayMs, jitterMs } = this.retryConfig;
 
-    const res = await this.fetchImpl(this.url, {
-      method: 'PUT',
-      headers: {
-        authorization: `Bearer ${token}`,
-        'content-type': 'text/plain; charset=utf-8',
-        'x-event-id': event.eventId,
-        title: event.watchName,
-      },
-      body: message,
-    });
-    if (!res.ok) {
+    let lastError: Error | undefined;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const res = await this.fetchImpl(this.url, {
+        method: 'PUT',
+        headers: {
+          authorization: `Bearer ${token}`,
+          'content-type': 'text/plain; charset=utf-8',
+          'x-event-id': event.eventId,
+          title: event.watchName,
+        },
+        body: message,
+      });
+      if (res.ok) {
+        return;
+      }
       const body = await res.text();
-      throw new Error(`Notification failed with ${res.status}: ${body.slice(0, 256)}`);
+      lastError = new Error(`Notification failed with ${res.status}: ${body.slice(0, 256)}`);
+
+      // 4xx errors are not transient; fail immediately
+      if (res.status >= 400 && res.status < 500) {
+        throw lastError;
+      }
+
+      // Retry on 5xx if we have attempts left
+      if (attempt < maxAttempts - 1) {
+        const delay = Math.min(baseDelayMs * Math.pow(2, attempt), maxDelayMs) +
+          Math.floor(Math.random() * Math.max(1, jitterMs));
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
     }
+    throw lastError!;
   }
 }
 

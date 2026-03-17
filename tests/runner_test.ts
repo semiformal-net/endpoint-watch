@@ -48,7 +48,6 @@ function baseConfig(messageUrl: string): AppConfig {
     runtime: {
       maxParallelWatches: 2,
       perWatchJitterMs: 0,
-      runLeaseTtlSec: 120,
     },
     message: {
       url: messageUrl,
@@ -160,7 +159,7 @@ Deno.test('runner handles wildcard list extraction and stores full list state', 
   const config: AppConfig = {
     pollCron: '0 */3 * * *',
     userAgent: 'test-agent',
-    runtime: { maxParallelWatches: 1, perWatchJitterMs: 0, runLeaseTtlSec: 120 },
+    runtime: { maxParallelWatches: 1, perWatchJitterMs: 0 },
     message: {
       url: 'https://ntfy.example.com/topic',
       authEnv: 'NTFY_AUTH_TOKEN',
@@ -341,7 +340,7 @@ Deno.test('missing per-watch upstream auth env fails only that watch', async () 
   const config: AppConfig = {
     pollCron: '0 */3 * * *',
     userAgent: 'test-agent',
-    runtime: { maxParallelWatches: 2, perWatchJitterMs: 0, runLeaseTtlSec: 120 },
+    runtime: { maxParallelWatches: 2, perWatchJitterMs: 0 },
     message: {
       url: 'https://ntfy.example.com/topic',
       authEnv: 'NTFY_AUTH_TOKEN',
@@ -419,7 +418,7 @@ Deno.test('invalid upstream payloads do not stop other watches', async () => {
   const config: AppConfig = {
     pollCron: '0 */3 * * *',
     userAgent: 'test-agent',
-    runtime: { maxParallelWatches: 3, perWatchJitterMs: 0, runLeaseTtlSec: 120 },
+    runtime: { maxParallelWatches: 3, perWatchJitterMs: 0 },
     message: {
       url: 'https://ntfy.example.com/topic',
       authEnv: 'NTFY_AUTH_TOKEN',
@@ -554,7 +553,7 @@ Deno.test({
     const config: AppConfig = {
       pollCron: '0 */3 * * *',
       userAgent: 'test-agent',
-      runtime: { maxParallelWatches: 2, perWatchJitterMs: 0, runLeaseTtlSec: 120 },
+      runtime: { maxParallelWatches: 2, perWatchJitterMs: 0 },
       message: {
         url: `http://127.0.0.1:${address.port}/topic`,
         authEnv: 'NTFY_AUTH_TOKEN',

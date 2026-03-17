@@ -75,7 +75,6 @@ function parseRuntime(raw: unknown): RuntimeConfig {
       source.per_watch_jitter_ms ?? 250,
       'runtime.per_watch_jitter_ms',
     ),
-    runLeaseTtlSec: asPositiveInt(source.run_lease_ttl_sec ?? 300, 'runtime.run_lease_ttl_sec'),
   };
 }
 
