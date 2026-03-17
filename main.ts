@@ -1,7 +1,6 @@
 import { configPathFromEnv, loadConfig } from './src/config.ts';
 import { HttpNotifier } from './src/notifier.ts';
 import { ChangeRunner } from './src/runner.ts';
-import { buildHandler } from './src/server.ts';
 import { DenoKvStateStore } from './src/state.ts';
 import { parse as parseYaml } from '@std/yaml';
 
@@ -9,14 +8,9 @@ const configPath = configPathFromEnv();
 const fallbackCron = '0 * * * *';
 const cronSchedule = readCronScheduleSync(configPath) ?? fallbackCron;
 
-interface AppRuntime {
-  runner: ChangeRunner;
-  handler: Deno.ServeHandler;
-}
+let runtimePromise: Promise<ChangeRunner> | null = null;
 
-let runtimePromise: Promise<AppRuntime> | null = null;
-
-function getRuntime(): Promise<AppRuntime> {
+function getRuntime(): Promise<ChangeRunner> {
   if (!runtimePromise) {
     runtimePromise = (async () => {
       const config = await loadConfig(configPath);
@@ -25,11 +19,7 @@ function getRuntime(): Promise<AppRuntime> {
       const kv = kvPath ? await Deno.openKv(kvPath) : await Deno.openKv();
       const store = new DenoKvStateStore(kv);
       const notifier = new HttpNotifier(config.message.url);
-      const runner = new ChangeRunner(config, { store, notifier });
-      return {
-        runner,
-        handler: buildHandler(runner, store),
-      };
+      return new ChangeRunner(config, { store, notifier });
     })();
   }
   return runtimePromise;
@@ -54,7 +44,7 @@ function readCronScheduleSync(path: string | URL): string | null {
 
 Deno.cron('poll-change-detector', cronSchedule, async () => {
   try {
-    const { runner } = await getRuntime();
+    const runner = await getRuntime();
     await runner.runOnce();
   } catch (err) {
     console.error('CRON RUN FAILED', {
@@ -63,9 +53,5 @@ Deno.cron('poll-change-detector', cronSchedule, async () => {
   }
 });
 
-const port = Number(Deno.env.get('PORT') ?? 8000);
-console.log(`listening on :${port} using config ${String(configPath)} cron=${cronSchedule}`);
-Deno.serve({ port }, async (req, info) => {
-  const { handler } = await getRuntime();
-  return await handler(req, info);
-});
+console.log(`listening using config ${String(configPath)} cron=${cronSchedule}`);
+Deno.serve((_req) => new Response('Not Found', { status: 404 }));

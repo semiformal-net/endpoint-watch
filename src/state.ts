@@ -12,7 +12,6 @@ export interface StateStore {
     expectedVersion: string | null,
     state: WatchState,
   ): Promise<boolean>;
-  list(): Promise<Record<string, WatchState>>;
   forceSet(watchName: string, state: WatchState): Promise<void>;
 }
 
@@ -40,14 +39,6 @@ export class InMemoryStateStore implements StateStore {
     const nextVersion = current ? current.version + 1 : 1;
     this.#map.set(watchName, { state: structuredClone(state), version: nextVersion });
     return true;
-  }
-
-  async list(): Promise<Record<string, WatchState>> {
-    const out: Record<string, WatchState> = {};
-    for (const [name, value] of this.#map.entries()) {
-      out[name] = structuredClone(value.state);
-    }
-    return out;
   }
 
   async forceSet(watchName: string, state: WatchState): Promise<void> {
@@ -80,15 +71,6 @@ export class DenoKvStateStore implements StateStore {
       .set(key, state)
       .commit();
     return res.ok;
-  }
-
-  async list(): Promise<Record<string, WatchState>> {
-    const out: Record<string, WatchState> = {};
-    for await (const entry of this.kv.list<WatchState>({ prefix: ['watch_state'] })) {
-      const name = String(entry.key[1]);
-      out[name] = structuredClone(entry.value);
-    }
-    return out;
   }
 
   async forceSet(watchName: string, state: WatchState): Promise<void> {
