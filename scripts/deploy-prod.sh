@@ -61,4 +61,4 @@ find $tmp_dir
 echo "------------------------------"
 
 echo "Deploying $app in $org using temp dir: $tmp_dir"
-echo deno deploy "$tmp_dir" --org "$org" --app "$app" --prod
+deno deploy "$tmp_dir" --org "$org" --app "$app" --prod
