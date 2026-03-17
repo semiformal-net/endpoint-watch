@@ -32,10 +32,6 @@ class FlakyCasStore implements StateStore {
     return await this.base.compareAndSet(watchName, expectedVersion, state);
   }
 
-  list() {
-    return this.base.list();
-  }
-
   forceSet(watchName: string, state: WatchState) {
     return this.base.forceSet(watchName, state);
   }

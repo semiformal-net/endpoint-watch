@@ -113,12 +113,6 @@ export GITHUB_TOKEN='...'
 deno task start
 ```
 
-App endpoints:
-
-- `POST /run` - trigger a run immediately
-- `GET /state` - inspect watch state
-- `GET /health` - health check
-
 ## Run Tests
 
 ### Standard local suite
@@ -134,17 +128,6 @@ RUN_LIVE_TESTS=1 deno task test
 ```
 
 This verifies live fetches from GitHub release endpoints and forced state drift detection.
-
-## Manual End-to-End Alert Test
-
-1. Ensure `NTFY_AUTH_TOKEN` (and optional `GITHUB_TOKEN`) is exported.
-2. Start app locally: `deno task start`
-3. Trigger one baseline run:
-   - `curl -X POST http://127.0.0.1:8000/run`
-4. Force stale state and run again (to trigger alerts):
-   - use `Deno.openKv()` to set old values in `watch_state` keys, then call `/run` again.
-
-Expected result: changed watches show `notified: true` and ntfy receives alert(s).
 
 ## Deploy to Deno Deploy
 
@@ -166,7 +149,7 @@ You can deploy either from the dashboard or CLI.
    - `GITHUB_TOKEN` (optional, for higher GitHub API rate limit)
    - ensure `KV_PATH` is **not** set on Deploy (managed Deploy KV should be used)
 6. Deploy and verify logs.
-7. Trigger a run (`/run`) and confirm alerts are sent.
+7. Verify cron runs appear in logs.
 
 ### Option B: CLI (`deno deploy`)
 
@@ -198,7 +181,7 @@ deno deploy env add GITHUB_TOKEN '...' --secret --org <your-org> --app <your-app
 deno deploy env delete KV_PATH --org <your-org> --app <your-app-name>
 ```
 
-Also attach a Deno KV database to the app in Deploy dashboard (Settings/Databases) before relying on `/state`.
+Also attach a Deno KV database to the app in Deploy dashboard (Settings/Databases).
 
 Useful commands:
 
@@ -214,8 +197,7 @@ deno deploy env list --org <your-org> --app <your-app-name>
 - Alert body:
   - scalar change: `old -> new`
   - list change: compact `removed` / `added` diff (common items omitted).
-- On Deploy, leave `KV_PATH` unset so state is stored in managed Deploy KV.
-- If `/run` succeeds but `/state` stays `{}`, verify `KV_PATH` is not configured in app env vars.
+- On Deploy, leave `KV_PATH` unset so the managed Deploy KV is used automatically.
 
 ## Portability (Cloudflare Workers)
 
