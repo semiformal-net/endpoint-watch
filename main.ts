@@ -18,8 +18,12 @@ function getRuntime(): Promise<ChangeRunner> {
       // On Deploy, use managed KV unless KV_PATH is explicitly provided.
       const kv = kvPath ? await Deno.openKv(kvPath) : await Deno.openKv();
       const store = new DenoKvStateStore(kv);
-      const notifier = new HttpNotifier(config.message.url);
-      return new ChangeRunner(config, { store, notifier });
+      const notifier = new HttpNotifier(config.message.url, config.message.retry);
+      const runner = new ChangeRunner(config, { store, notifier });
+      return {
+        runner,
+        handler: buildHandler(runner, store),
+      };
     })();
   }
   return runtimePromise;

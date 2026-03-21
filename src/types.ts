@@ -14,7 +14,6 @@ export interface MessageConfig {
 export interface RuntimeConfig {
   maxParallelWatches: number;
   perWatchJitterMs: number;
-  runLeaseTtlSec: number;
 }
 
 export interface WatchConfig {

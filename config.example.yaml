@@ -4,7 +4,6 @@ user_agent: 'change-detector/0.2-local'
 runtime:
   max_parallel_watches: 2
   per_watch_jitter_ms: 200
-  run_lease_ttl_sec: 300
 
 message:
   url: 'https://ntfy.sh/deno-test-000'
@@ -116,7 +115,7 @@ watches:
     auth_env: 'GITHUB_TOKEN'
     auth_prefix: 'token '
     headers:
-      accept: 'application/vnd.github+json' 
+      accept: 'application/vnd.github+json'
 
   - name: 'OpenAI-jobs'
     url: 'https://api.ashbyhq.com/posting-api/job-board/openai'
