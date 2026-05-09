@@ -110,11 +110,13 @@ function parseWatch(
   const notifyOnFirstObservation = Boolean(
     source.notify_on_first_observation ?? defaults.notify_on_first_observation ?? false,
   );
-  const authEnv = source.auth_env ?? defaults.auth_env
-    ? asString(source.auth_env ?? defaults.auth_env, `watch ${name}.auth_env`)
+  const authEnvRaw = source.auth_env ?? defaults.auth_env;
+  const authEnv = authEnvRaw != null
+    ? asString(authEnvRaw, `watch ${name}.auth_env`)
     : undefined;
-  const authPrefix = source.auth_prefix ?? defaults.auth_prefix
-    ? asStringAllowEmpty(source.auth_prefix ?? defaults.auth_prefix, `watch ${name}.auth_prefix`)
+  const authPrefixRaw = source.auth_prefix ?? defaults.auth_prefix;
+  const authPrefix = authPrefixRaw != null
+    ? asStringAllowEmpty(authPrefixRaw, `watch ${name}.auth_prefix`)
     : 'Bearer ';
 
   const headers = {
