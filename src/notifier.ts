@@ -31,7 +31,14 @@ export class HttpNotifier implements Notifier {
         return;
       }
       const body = await res.text();
-      lastError = new Error(`Notification failed with ${res.status}: ${body.slice(0, 256)}`);
+      // Body is logged separately and intentionally kept out of the thrown
+      // Error: it ends up in WatchState.lastError, and a misconfigured
+      // notifier URL could echo auth headers in its response body.
+      console.error('NOTIFIER ERROR RESPONSE', {
+        status: res.status,
+        body: body.slice(0, 256),
+      });
+      lastError = new Error(`Notification failed with ${res.status}`);
 
       // 4xx errors are not transient; fail immediately
       if (res.status >= 400 && res.status < 500) {
