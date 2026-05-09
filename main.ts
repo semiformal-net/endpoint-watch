@@ -8,25 +8,24 @@ const configPath = configPathFromEnv();
 const fallbackCron = '0 * * * *';
 const cronSchedule = readCronScheduleSync(configPath) ?? fallbackCron;
 
-let runtimePromise: Promise<ChangeRunner> | null = null;
+let runnerPromise: Promise<ChangeRunner> | null = null;
 
-function getRuntime(): Promise<ChangeRunner> {
-  if (!runtimePromise) {
-    runtimePromise = (async () => {
+function getRunner(): Promise<ChangeRunner> {
+  if (!runnerPromise) {
+    runnerPromise = (async () => {
       const config = await loadConfig(configPath);
       const kvPath = Deno.env.get('KV_PATH');
       // On Deploy, use managed KV unless KV_PATH is explicitly provided.
       const kv = kvPath ? await Deno.openKv(kvPath) : await Deno.openKv();
       const store = new DenoKvStateStore(kv);
       const notifier = new HttpNotifier(config.message.url, config.message.retry);
-      const runner = new ChangeRunner(config, { store, notifier });
-      return {
-        runner,
-        handler: buildHandler(runner, store),
-      };
-    })();
+      return new ChangeRunner(config, { store, notifier });
+    })().catch((err) => {
+      runnerPromise = null;
+      throw err;
+    });
   }
-  return runtimePromise;
+  return runnerPromise;
 }
 
 function readCronScheduleSync(path: string | URL): string | null {
@@ -48,7 +47,7 @@ function readCronScheduleSync(path: string | URL): string | null {
 
 Deno.cron('poll-change-detector', cronSchedule, async () => {
   try {
-    const runner = await getRuntime();
+    const runner = await getRunner();
     await runner.runOnce();
   } catch (err) {
     console.error('CRON RUN FAILED', {
