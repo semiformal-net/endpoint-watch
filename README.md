@@ -83,14 +83,22 @@ Per-watch fields:
 
 ### JSONPath support
 
-Supported:
+Powered by [jsonpathly](https://github.com/atamano/jsonpathly), which implements
+[RFC 9535](https://datatracker.ietf.org/doc/html/rfc9535). Filter expressions are evaluated
+by a dedicated parser/evaluator — no `eval` or `Function` is used.
 
-- `$.foo.bar`
-- `$.items[0].name`
-- `$.jobs[*].title`
-- `$.releases[0]["tag-name"]`
+Examples:
 
-Extraction behavior:
+- Dot/bracket: `$.foo.bar`, `$.items[0].name`, `$.releases[0]["tag-name"]`
+- Wildcard: `$.jobs[*].title`
+- Recursive descent: `$..tag_name`
+- Filters: `$.releases[?(@.cycle == '1.30')].latest`
+- Logical ops: `$.releases[?(@.lts == true && @.eol == false)].latest`
+- Comparisons (`==`, `!=`, `<`, `<=`, `>`, `>=`), regex (`=~`), `&&`, `||`, `!`
+- RFC 9535 functions (`length()`, `count()`, `match()`, `search()`, `value()`) and extension
+  ops (`in`, `nin`, `subsetof`, `anyof`, `noneof`, `size`, `empty`)
+
+Extraction behavior (wrapper applied on top of the library):
 
 - 0 matches -> `null`
 - 1 match -> scalar/object

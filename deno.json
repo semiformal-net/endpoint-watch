@@ -20,7 +20,8 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.13",
-    "@std/yaml": "jsr:@std/yaml@^1.0.10"
+    "@std/yaml": "jsr:@std/yaml@^1.0.10",
+    "jsonpathly": "npm:jsonpathly@^3.0.0"
   },
   "fmt": {
     "lineWidth": 100,

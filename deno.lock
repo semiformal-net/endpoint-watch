@@ -3,7 +3,8 @@
   "specifiers": {
     "jsr:@std/assert@^1.0.13": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.12",
-    "jsr:@std/yaml@^1.0.10": "1.0.12"
+    "jsr:@std/yaml@^1.0.10": "1.0.12",
+    "npm:jsonpathly@3": "3.0.0"
   },
   "jsr": {
     "@std/assert@1.0.19": {
@@ -19,10 +20,16 @@
       "integrity": "7deabca4545bcedd07c5f69ea53acea71b8b4c67562f224e17b90d75944cb20c"
     }
   },
+  "npm": {
+    "jsonpathly@3.0.0": {
+      "integrity": "sha512-1MCCdv1BJpniRPyXC8x3ofJJyZ1DpVYZtw4dRJBYNW98q8H21hV55l2bfuOHKuSCBXLXl6fPre9jcBwJxjE+ZA=="
+    }
+  },
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@^1.0.13",
-      "jsr:@std/yaml@^1.0.10"
+      "jsr:@std/yaml@^1.0.10",
+      "npm:jsonpathly@3"
     ]
   }
 }
