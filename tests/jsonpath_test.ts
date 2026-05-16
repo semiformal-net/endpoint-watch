@@ -44,3 +44,65 @@ Deno.test('jsonpath validation catches bad syntax', () => {
   assertThrows(() => validateJsonPath('tag_name'));
   assertThrows(() => validateJsonPath('$.foo[]'));
 });
+
+Deno.test('jsonpath filter matches by equality', () => {
+  const data = {
+    releases: [
+      { cycle: '1.29', latest: '1.29.4' },
+      { cycle: '1.30', latest: '1.30.2' },
+      { cycle: '1.31', latest: '1.31.0' },
+    ],
+  };
+  assertEquals(
+    extractJsonPath(data, "$.releases[?(@.cycle == '1.30')].latest"),
+    '1.30.2',
+  );
+});
+
+Deno.test('jsonpath filter with no match returns null', () => {
+  const data = {
+    releases: [
+      { cycle: '1.29', latest: '1.29.4' },
+    ],
+  };
+  assertEquals(
+    extractJsonPath(data, "$.releases[?(@.cycle == '9.99')].latest"),
+    null,
+  );
+});
+
+Deno.test('jsonpath filter with multiple matches returns array', () => {
+  const data = {
+    releases: [
+      { cycle: '1.29', lts: true, latest: '1.29.4' },
+      { cycle: '1.30', lts: false, latest: '1.30.2' },
+      { cycle: '1.31', lts: true, latest: '1.31.0' },
+    ],
+  };
+  assertEquals(
+    extractJsonPath(data, '$.releases[?(@.lts == true)].latest'),
+    ['1.29.4', '1.31.0'],
+  );
+});
+
+Deno.test('jsonpath filter with logical AND', () => {
+  const data = {
+    releases: [
+      { cycle: '1.29', lts: true, eol: false, latest: '1.29.4' },
+      { cycle: '1.30', lts: true, eol: true, latest: '1.30.2' },
+      { cycle: '1.31', lts: false, eol: false, latest: '1.31.0' },
+    ],
+  };
+  assertEquals(
+    extractJsonPath(data, '$.releases[?(@.lts == true && @.eol == false)].latest'),
+    '1.29.4',
+  );
+});
+
+Deno.test('jsonpath recursive descent collects matches', () => {
+  const data = {
+    a: { name: 'x' },
+    b: { nested: { name: 'y' } },
+  };
+  assertEquals(extractJsonPath(data, '$..name'), ['x', 'y']);
+});
